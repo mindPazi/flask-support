@@ -1,22 +1,33 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.mindpazi.flasksupportplugin</id>
-    <name>Variable Type Display</name>
-    <vendor>mindpazi</vendor>
+  <id>com.github.mindpazi.flasksupportplugin</id>
+  <name>Variable Type Display</name>
+  <vendor url="https://github.com/mindpazi/flask-support-plugin" email="mindpazi@example.com">mindpazi</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.xdebugger</depends>
+  <description><![CDATA[
+      Plugin per visualizzare il tipo di variabili Java nella barra di stato dell'IDE.
+      Posiziona il cursore su un nome di variabile per visualizzarne il tipo.
+    ]]>  </description>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+  <change-notes><![CDATA[
+      Segnalazioni di bug e richieste di funzionalità sono benvenute su
+      <a href="https://github.com/mindpazi/flask-support-plugin/issues">issue tracker</a>.
+    ]]>  </change-notes>
 
-    <!-- Note: The TypeInfo components are temporarily commented out to make tests pass.
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.xdebugger</depends>
+
+  <resource-bundle>messages.MyBundle</resource-bundle>
+
+  <!-- Note: The TypeInfo components are temporarily commented out to make tests pass.
          Uncomment these when running the plugin normally. -->
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.mindpazi.flasksupportplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.startup.MyProjectActivity" />
-        <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.statusbar.VarTypeStartupActivity" id="varTypeStartupActivity" order="last"/>
-        <statusBarWidgetFactory implementation="com.github.mindpazi.flasksupportplugin.statusbar.VarTypeStatusBarWidgetFactory" id="VarType" order="first"/>
-    </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow factoryClass="com.github.mindpazi.flasksupportplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+    <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.startup.MyProjectActivity" />
+    <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.statusbar.startup.VarTypeStartupActivity" id="varTypeStartupActivity" order="last"/>
+    <statusBarWidgetFactory implementation="com.github.mindpazi.flasksupportplugin.statusbar.statusbar.VarTypeStatusBarWidgetFactory" id="VarType" order="first"/>
+    <errorHandler implementation="com.github.mindpazi.flasksupportplugin.error.VarTypeErrorReporter"/>
+  </extensions>
 </idea-plugin>

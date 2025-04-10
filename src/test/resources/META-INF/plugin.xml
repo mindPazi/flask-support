@@ -14,5 +14,6 @@
         <toolWindow factoryClass="com.github.mindpazi.flasksupportplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.startup.MyProjectActivity" />
         <!-- TypeInfo components are intentionally omitted for tests -->
+        <errorHandler implementation="com.github.mindpazi.flasksupportplugin.error.VarTypeErrorReporter"/>
     </extensions>
 </idea-plugin> 
