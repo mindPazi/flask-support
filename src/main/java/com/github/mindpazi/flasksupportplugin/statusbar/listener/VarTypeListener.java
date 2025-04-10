@@ -2,20 +2,12 @@ package com.github.mindpazi.flasksupportplugin.statusbar.listener;
 
 import com.github.mindpazi.flasksupportplugin.statusbar.analyzer.VarTypeAnalyzer;
 import com.github.mindpazi.flasksupportplugin.statusbar.statusbar.VarTypeWidgetManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Listener per gli eventi di movimento del cursore che aggiorna il widget nella
