@@ -1,0 +1,18 @@
+<!-- Plugin Configuration File for tests -->
+<idea-plugin>
+    <id>com.github.mindpazi.flasksupportplugin</id>
+    <name>Variable Type Display (Test)</name>
+    <vendor>mindpazi</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <resource-bundle>messages.MyBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow factoryClass="com.github.mindpazi.flasksupportplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.startup.MyProjectActivity" />
+        <!-- TypeInfo components are intentionally omitted for tests -->
+    </extensions>
+</idea-plugin> 
