@@ -1,13 +1,21 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.statusbar;
+package com.github.mindpazi.flasksupportplugin.statusbar.widget;
 
+import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
+    @NonNls
+    public static final String WIDGET_DISPLAY_NAME = "widget.display.name";
+    private final Supplier<String> displayNameMsg = () -> VarTypeBundle.message("widget.display.name");
+
     @Override
     public @NotNull String getId() {
         return VarTypeStatusBarWidget.ID;
@@ -15,7 +23,7 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
 
     @Override
     public @Nls @NotNull String getDisplayName() {
-        return "Variable Type Information";
+        return displayNameMsg.get();
     }
 
     @Override

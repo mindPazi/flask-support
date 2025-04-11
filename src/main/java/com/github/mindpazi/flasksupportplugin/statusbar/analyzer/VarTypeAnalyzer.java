@@ -1,5 +1,6 @@
 package com.github.mindpazi.flasksupportplugin.statusbar.analyzer;
 
+import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
@@ -7,80 +8,108 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilBase;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
- * Classe responsabile dell'analisi del PSI per determinare il tipo di una
- * variabile.
- * Implementa il pattern di composizione separando la logica di analisi dal
+ * Class responsible for analyzing the PSI to determine the type of a variable.
+ * Implements the composition pattern by separating the analysis logic from the
  * listener.
  */
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
+    private final Supplier<String> analyzingElementMsg = () -> VarTypeBundle.message("log.analyzing.element");
+    private final Supplier<String> typeLabelMsg = () -> VarTypeBundle.message("widget.type.label");
+    private final Supplier<String> foundVariableDeclarationMsg = () -> VarTypeBundle
+            .message("log.found.variable.declaration");
+    private final Supplier<String> foundVariableReferenceMsg = () -> VarTypeBundle
+            .message("log.found.variable.reference");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
     }
 
     /**
-     * Analizza l'elemento PSI alla posizione del cursore e restituisce il tipo di
-     * variabile, se presente.
+     * Analyzes the PSI element at the cursor position and returns the variable
+     * type, if present.
      *
-     * @param editor L'editor attivo
-     * @param offset La posizione del cursore
-     * @return Il tipo di variabile formattato o null se non è stata trovata una
-     *         variabile
+     * @param editor The active editor
+     * @param offset The cursor position
+     * @return The formatted variable type or null if no variable was found
      */
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
-        return ApplicationManager.getApplication().runReadAction((Computable<String>) () -> {
-            PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
+        // Verifica se l'applicazione è disponibile
+        if (ApplicationManager.getApplication() == null) {
+            LOG.warn("Application non disponibile per l'analisi PSI");
+            return null;
+        }
 
-            if (psiFile == null) {
-                return null;
-            }
+        // Verifica se il progetto è valido
+        if (project.isDisposed()) {
+            return null;
+        }
 
-            LOG.info("Analyzing element at offset: " + offset + " in file: " + psiFile.getName());
-            PsiElement element = psiFile.findElementAt(offset);
-            if (element == null) {
-                return null;
-            }
+        try {
+            return ApplicationManager.getApplication().runReadAction((Computable<String>) () -> {
+                // Ulteriore controllo dopo l'ottenimento del ReadAccess
+                if (project.isDisposed()) {
+                    return null;
+                }
 
-            // Verifica se l'elemento è un identificatore
-            if (!(element instanceof PsiIdentifier)) {
-                return null;
-            }
+                PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
 
-            // Genitore dell'identificatore (potrebbe essere PsiVariable o altro)
-            PsiElement parent = element.getParent();
+                if (psiFile == null) {
+                    return null;
+                }
 
-            // Caso 1: Verificare se è una dichiarazione di variabile
-            if (parent instanceof PsiVariable) {
-                PsiVariable variable = (PsiVariable) parent;
-                PsiType type = variable.getType();
-                String result = "Type: " + type.getPresentableText();
-                LOG.info("Found variable declaration with type: " + result);
-                return result;
-            }
+                LOG.info(VarTypeBundle.message("log.analyzing.element", offset, psiFile.getName()));
+                PsiElement element = psiFile.findElementAt(offset);
+                if (element == null) {
+                    return null;
+                }
 
-            // Caso 2: Verificare se è un riferimento a una variabile
-            if (parent instanceof PsiReferenceExpression) {
-                PsiReferenceExpression refExpr = (PsiReferenceExpression) parent;
-                PsiElement resolvedElement = refExpr.resolve();
+                // Check if the element is an identifier
+                if (!(element instanceof PsiIdentifier)) {
+                    return null;
+                }
 
-                if (resolvedElement instanceof PsiVariable) {
-                    PsiVariable variable = (PsiVariable) resolvedElement;
+                // Parent of the identifier (could be PsiVariable or others)
+                PsiElement parent = element.getParent();
+
+                // Case 1: Check if it is a variable declaration
+                if (parent instanceof PsiVariable) {
+                    PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
-                    String result = "Type: " + type.getPresentableText();
-                    LOG.info("Found variable reference with type: " + result);
+                    String result = VarTypeBundle.message("widget.type.label", type.getPresentableText());
+                    LOG.info(VarTypeBundle.message("log.found.variable.declaration", result));
                     return result;
                 }
-            }
 
-            // Se non è né una dichiarazione né un riferimento, non mostrare nulla
+                // Case 2: Check if it is a reference to a variable
+                if (parent instanceof PsiReferenceExpression) {
+                    PsiReferenceExpression refExpr = (PsiReferenceExpression) parent;
+                    PsiElement resolvedElement = refExpr.resolve();
+
+                    if (resolvedElement instanceof PsiVariable) {
+                        PsiVariable variable = (PsiVariable) resolvedElement;
+                        PsiType type = variable.getType();
+                        String result = VarTypeBundle.message("widget.type.label", type.getPresentableText());
+                        LOG.info(VarTypeBundle.message("log.found.variable.reference", result));
+                        return result;
+                    }
+                }
+
+                // If it is neither a declaration nor a reference, show nothing
+                return null;
+            });
+        } catch (Exception e) {
+            LOG.warn("Errore durante l'analisi PSI", e);
             return null;
-        });
+        }
     }
 }

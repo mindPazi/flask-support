@@ -1,5 +1,6 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.statusbar;
+package com.github.mindpazi.flasksupportplugin.statusbar.widget;
 
+import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -11,10 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.function.Supplier;
 
 public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusBarWidget.TextPresentation {
     public static final String ID = "VarType";
     private String currentVarType = "";
+    private final Supplier<String> notAvailableMsg = () -> VarTypeBundle.message("widget.type.not.available");
+    private final Supplier<String> tooltipMsg = () -> VarTypeBundle.message("widget.tooltip");
 
     public VarTypeStatusBarWidget(@NotNull Project project) {
         super(project);
@@ -37,7 +41,7 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
 
     @Override
     public @NotNull String getText() {
-        return currentVarType.isEmpty() ? "Type: N/A" : currentVarType;
+        return currentVarType.isEmpty() ? notAvailableMsg.get() : currentVarType;
     }
 
     public void updateVarType(@Nullable String VarType) {
@@ -54,7 +58,7 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
 
     @Override
     public @Nullable @Nls String getTooltipText() {
-        return "Type of the variable at caret position";
+        return tooltipMsg.get();
     }
 
     @Override
