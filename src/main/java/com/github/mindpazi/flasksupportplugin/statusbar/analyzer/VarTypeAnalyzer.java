@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilBase;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,13 +21,12 @@ import java.util.function.Supplier;
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
-    // Suppliers are used to defer message resolution until needed, preventing
-    // unnecessary resource usage
-    private final Supplier<String> typeLabelMsg = () -> VarTypeBundle.message("widget.type.label");
-    private final Supplier<String> foundVariableDeclarationMsg = () -> VarTypeBundle
-            .message("log.found.variable.declaration");
-    private final Supplier<String> foundVariableReferenceMsg = () -> VarTypeBundle
-            .message("log.found.variable.reference");
+    // Usando messagePointer che è progettato specificamente per creare Supplier
+    private final Supplier<String> typeLabelMsg = VarTypeBundle.messagePointer("widget.type.label");
+    private final Supplier<String> foundVariableDeclarationMsg = VarTypeBundle
+            .messagePointer("log.found.variable.declaration");
+    private final Supplier<String> foundVariableReferenceMsg = VarTypeBundle
+            .messagePointer("log.found.variable.reference");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -37,10 +35,6 @@ public class VarTypeAnalyzer {
     /**
      * Analyzes the PSI element at the cursor position and returns the variable
      * type, if present.
-     *
-     * @param editor The active editor
-     * @param offset The cursor position
-     * @return The formatted variable type or null if no variable was found
      */
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
@@ -79,8 +73,14 @@ public class VarTypeAnalyzer {
                 if (parent instanceof PsiVariable) {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
-                    String result = typeLabelMsg.get().formatted(type.getPresentableText());
-                    LOG.info(foundVariableDeclarationMsg.get().formatted(result));
+
+                    // Usiamo dei Supplier temporanei per questa specifica chiamata
+                    Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
+                            type.getPresentableText());
+                    String result = typeLabel.get();
+
+                    // Log con Supplier temporaneo
+                    LOG.info(VarTypeBundle.messagePointer("log.found.variable.declaration", result).get());
                     return result;
                 }
 
@@ -92,8 +92,14 @@ public class VarTypeAnalyzer {
                     if (resolvedElement instanceof PsiVariable) {
                         PsiVariable variable = (PsiVariable) resolvedElement;
                         PsiType type = variable.getType();
-                        String result = typeLabelMsg.get().formatted(type.getPresentableText());
-                        LOG.info(foundVariableReferenceMsg.get().formatted(result));
+
+                        // Usiamo dei Supplier temporanei per questa specifica chiamata
+                        Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
+                                type.getPresentableText());
+                        String result = typeLabel.get();
+
+                        // Log con Supplier temporaneo
+                        LOG.info(VarTypeBundle.messagePointer("log.found.variable.reference", result).get());
                         return result;
                     }
                 }
