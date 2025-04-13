@@ -1,7 +1,6 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.startup;
+package com.github.mindpazi.flasksupportplugin.statusbar;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
-import com.github.mindpazi.flasksupportplugin.statusbar.listener.VarTypeListener;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.DumbAware;
@@ -11,16 +10,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-/**
- * Activity che inizializza il plugin durante l'avvio dell'IDE.
- * È contrassegnata come DumbAware per consentire l'esecuzione durante
- * l'indicizzazione.
- */
 public class VarTypeStartupActivity implements StartupActivity, DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeStartupActivity.class);
     private final Supplier<String> startupRunningMsg = () -> VarTypeBundle.message("log.startup.running");
     private final Supplier<String> startupRegisteredMsg = () -> VarTypeBundle.message("log.startup.registered");
     private final Supplier<String> startupFailedMsg = () -> VarTypeBundle.message("log.startup.failed");
+    private final Supplier<String> editorFactoryNotAvailableMsg = () -> VarTypeBundle
+            .message("log.editor.factory.not.available");
 
     @Override
     public void runActivity(@NotNull Project project) {
@@ -35,7 +31,7 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
 
         try {
             if (EditorFactory.getInstance() == null) {
-                LOG.warn("EditorFactory non disponibile, l'inizializzazione sarà posticipata");
+                LOG.warn(editorFactoryNotAvailableMsg.get());
                 return;
             }
 

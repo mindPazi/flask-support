@@ -21,7 +21,7 @@
   <resource-bundle>messages.VarTypeBundle</resource-bundle>
 
   <extensions defaultExtensionNs="com.intellij">
-    <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.statusbar.startup.VarTypeStartupActivity" id="varTypeStartupActivity" order="last"/>
+    <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.statusbar.VarTypeStartupActivity" id="varTypeStartupActivity" order="last"/>
     <statusBarWidgetFactory implementation="com.github.mindpazi.flasksupportplugin.statusbar.widget.VarTypeStatusBarWidgetFactory" id="VarType" order="first"/>
     <errorHandler implementation="com.github.mindpazi.flasksupportplugin.error.VarTypeErrorReporter"/>
   </extensions>

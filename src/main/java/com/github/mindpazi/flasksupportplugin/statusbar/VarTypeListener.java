@@ -1,7 +1,6 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.listener;
+package com.github.mindpazi.flasksupportplugin.statusbar;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
-import com.github.mindpazi.flasksupportplugin.statusbar.analyzer.VarTypeAnalyzer;
 import com.github.mindpazi.flasksupportplugin.statusbar.widget.VarTypeWidgetManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;

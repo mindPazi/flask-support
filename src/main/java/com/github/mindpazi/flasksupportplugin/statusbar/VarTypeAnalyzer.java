@@ -1,4 +1,4 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.analyzer;
+package com.github.mindpazi.flasksupportplugin.statusbar;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.application.ApplicationManager;
@@ -21,12 +21,6 @@ import java.util.function.Supplier;
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
-    // Usando messagePointer che è progettato specificamente per creare Supplier
-    private final Supplier<String> typeLabelMsg = VarTypeBundle.messagePointer("widget.type.label");
-    private final Supplier<String> foundVariableDeclarationMsg = VarTypeBundle
-            .messagePointer("log.found.variable.declaration");
-    private final Supplier<String> foundVariableReferenceMsg = VarTypeBundle
-            .messagePointer("log.found.variable.reference");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -74,12 +68,9 @@ public class VarTypeAnalyzer {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
 
-                    // Usiamo dei Supplier temporanei per questa specifica chiamata
                     Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
                             type.getPresentableText());
                     String result = typeLabel.get();
-
-                    // Log con Supplier temporaneo
                     LOG.info(VarTypeBundle.messagePointer("log.found.variable.declaration", result).get());
                     return result;
                 }
@@ -93,12 +84,10 @@ public class VarTypeAnalyzer {
                         PsiVariable variable = (PsiVariable) resolvedElement;
                         PsiType type = variable.getType();
 
-                        // Usiamo dei Supplier temporanei per questa specifica chiamata
                         Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
                                 type.getPresentableText());
                         String result = typeLabel.get();
 
-                        // Log con Supplier temporaneo
                         LOG.info(VarTypeBundle.messagePointer("log.found.variable.reference", result).get());
                         return result;
                     }
