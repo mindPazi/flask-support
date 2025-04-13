@@ -22,7 +22,8 @@ import java.util.function.Supplier;
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
-    private final Supplier<String> analyzingElementMsg = () -> VarTypeBundle.message("log.analyzing.element");
+    // Suppliers are used to defer message resolution until needed, preventing
+    // unnecessary resource usage
     private final Supplier<String> typeLabelMsg = () -> VarTypeBundle.message("widget.type.label");
     private final Supplier<String> foundVariableDeclarationMsg = () -> VarTypeBundle
             .message("log.found.variable.declaration");
@@ -78,8 +79,8 @@ public class VarTypeAnalyzer {
                 if (parent instanceof PsiVariable) {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
-                    String result = VarTypeBundle.message("widget.type.label", type.getPresentableText());
-                    LOG.info(VarTypeBundle.message("log.found.variable.declaration", result));
+                    String result = typeLabelMsg.get().formatted(type.getPresentableText());
+                    LOG.info(foundVariableDeclarationMsg.get().formatted(result));
                     return result;
                 }
 
@@ -91,8 +92,8 @@ public class VarTypeAnalyzer {
                     if (resolvedElement instanceof PsiVariable) {
                         PsiVariable variable = (PsiVariable) resolvedElement;
                         PsiType type = variable.getType();
-                        String result = VarTypeBundle.message("widget.type.label", type.getPresentableText());
-                        LOG.info(VarTypeBundle.message("log.found.variable.reference", result));
+                        String result = typeLabelMsg.get().formatted(type.getPresentableText());
+                        LOG.info(foundVariableReferenceMsg.get().formatted(result));
                         return result;
                     }
                 }
