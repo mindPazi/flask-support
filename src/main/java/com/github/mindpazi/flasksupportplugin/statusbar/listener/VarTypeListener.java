@@ -35,21 +35,15 @@ public class VarTypeListener implements CaretListener {
 
     @Override
     public void caretPositionChanged(@NotNull CaretEvent event) {
-        // Verifica se l'applicazione è disponibile
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
             return;
         }
 
-        // Verifica se il progetto è ancora valido
         if (project == null || project.isDisposed()) {
             return;
         }
 
         try {
-            if (project.isDisposed()) {
-                return;
-            }
-
             Editor editor = event.getEditor();
             int offset = event.getCaret().getOffset();
 

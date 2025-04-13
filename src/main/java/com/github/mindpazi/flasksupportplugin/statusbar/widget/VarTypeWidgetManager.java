@@ -33,12 +33,10 @@ public class VarTypeWidgetManager {
      *                show
      */
     public void updateStatusBarWidget(@Nullable String varType) {
-        // Verifica se l'applicazione è disponibile
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
             return;
         }
 
-        // Verifica se il progetto è ancora valido
         if (project == null || project.isDisposed()) {
             return;
         }

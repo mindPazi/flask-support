@@ -45,21 +45,15 @@ public class VarTypeAnalyzer {
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
         // Verifica se l'applicazione è disponibile
         if (ApplicationManager.getApplication() == null) {
-            LOG.warn("Application non disponibile per l'analisi PSI");
+            LOG.warn("Application not available");
             return null;
         }
-
-        // Verifica se il progetto è valido
-        if (project.isDisposed()) {
+        if (project.isDisposed() || project == null) {
             return null;
         }
 
         try {
             return ApplicationManager.getApplication().runReadAction((Computable<String>) () -> {
-                // Ulteriore controllo dopo l'ottenimento del ReadAccess
-                if (project.isDisposed()) {
-                    return null;
-                }
 
                 PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
 
