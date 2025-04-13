@@ -43,7 +43,6 @@ public class VarTypeAnalyzer {
      */
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
-        // Verifica se l'applicazione è disponibile
         if (ApplicationManager.getApplication() == null) {
             LOG.warn("Application not available");
             return null;
@@ -102,7 +101,7 @@ public class VarTypeAnalyzer {
                 return null;
             });
         } catch (Exception e) {
-            LOG.warn("Errore durante l'analisi PSI", e);
+            LOG.warn("Error during PSI analysis", e);
             return null;
         }
     }

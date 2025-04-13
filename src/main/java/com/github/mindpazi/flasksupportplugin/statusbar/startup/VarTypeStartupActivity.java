@@ -24,8 +24,8 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
 
     @Override
     public void runActivity(@NotNull Project project) {
+        // Check if the project is disposed before proceeding with the activity.
         if (project.isDisposed()) {
-            // Non eseguire l'attività se il progetto è già stato chiuso
             return;
         }
 
@@ -34,7 +34,6 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
         LOG.info(formattedMessage);
 
         try {
-            // Verifica che EditorFactory sia disponibile
             if (EditorFactory.getInstance() == null) {
                 LOG.warn("EditorFactory non disponibile, l'inizializzazione sarà posticipata");
                 return;
