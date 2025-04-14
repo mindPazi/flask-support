@@ -1,7 +1,7 @@
-package com.github.mindpazi.flasksupportplugin.activity;
+package com.github.mindpazi.flasksupportplugin.statusbar;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
-import com.github.mindpazi.flasksupportplugin.widget.VarTypeWidgetManager;
+import com.github.mindpazi.flasksupportplugin.statusbar.widget.VarTypeWidgetManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
