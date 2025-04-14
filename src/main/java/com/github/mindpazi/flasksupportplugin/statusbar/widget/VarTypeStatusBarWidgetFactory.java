@@ -7,21 +7,17 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
 import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.util.messages.MessageBusConnection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
@@ -29,8 +25,12 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     @NonNls
     public static final String WIDGET_DISPLAY_NAME = "widget.display.name";
     private final Supplier<String> displayNameMsg = () -> VarTypeBundle.message("widget.display.name");
-    private final Map<Project, Boolean> projectHasOpenEditors = new HashMap<>();
-    private final Map<Project, MessageBusConnection> projectConnections = new HashMap<>();
+
+    // Mappa che tiene traccia dello stato per ogni progetto
+    private final Map<Project, Boolean> projectsWithOpenEditors = new ConcurrentHashMap<>();
+
+    // Flag per controllare se il listener è già stato registrato
+    private volatile boolean listenerRegistered = false;
 
     @Override
     public @NotNull String getId() {
@@ -44,63 +44,65 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
 
     @Override
     public boolean isAvailable(@NotNull Project project) {
-        // Check if we've already determined the state for this project
-        if (!projectHasOpenEditors.containsKey(project)) {
-            // Initialize with current state
-            boolean hasOpenEditors = FileEditorManager.getInstance(project).getAllEditors().length > 0;
-            projectHasOpenEditors.put(project, hasOpenEditors);
+        // Registriamo il listener una sola volta per l'intera applicazione
+        setupListenerIfNeeded();
 
-            // Setup file editor listener
-            setupEditorListeners(project);
-        }
-
-        return projectHasOpenEditors.getOrDefault(project, false);
+        // Aggiorniamo e restituiamo lo stato corrente
+        return checkAndUpdateOpenEditorsState(project);
     }
 
-    private void setupEditorListeners(@NotNull Project project) {
-        if (projectConnections.containsKey(project)) {
-            return; // Already set up
-        }
+    /**
+     * Configura il listener globale per tutti gli editor, se non è già stato fatto
+     */
+    private void setupListenerIfNeeded() {
+        if (!listenerRegistered) {
+            synchronized (this) {
+                if (!listenerRegistered) {
+                    EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
+                        @Override
+                        public void editorCreated(@NotNull EditorFactoryEvent event) {
+                            Project project = event.getEditor().getProject();
+                            if (project != null) {
+                                projectsWithOpenEditors.put(project, true);
+                                updateWidgetVisibility(project);
+                            }
+                        }
 
-        // Subscribe to file editor events through message bus
-        MessageBusConnection connection = project.getMessageBus().connect();
-        connection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
-            @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-                projectHasOpenEditors.put(project, true);
-                updateWidgetVisibility(project);
-            }
+                        @Override
+                        public void editorReleased(@NotNull EditorFactoryEvent event) {
+                            Project project = event.getEditor().getProject();
+                            if (project != null) {
+                                // Verifichiamo quanti editor sono ancora aperti
+                                checkAndUpdateOpenEditorsState(project);
+                                updateWidgetVisibility(project);
+                            }
+                        }
+                    }, ApplicationManager.getApplication());
 
-            @Override
-            public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-                boolean hasOpenEditors = source.getAllEditors().length > 0;
-                projectHasOpenEditors.put(project, hasOpenEditors);
-                updateWidgetVisibility(project);
-            }
-        });
-
-        // Also listen to editor factory events as a backup
-        EditorFactoryListener editorListener = new EditorFactoryListener() {
-            @Override
-            public void editorCreated(@NotNull EditorFactoryEvent event) {
-                if (event.getEditor().getProject() == project) {
-                    projectHasOpenEditors.put(project, true);
-                    updateWidgetVisibility(project);
+                    listenerRegistered = true;
+                    LOG.info("Editor factory listener registered");
                 }
             }
-        };
-
-        EditorFactory.getInstance().addEditorFactoryListener(editorListener, connection);
-        projectConnections.put(project, connection);
-
-        // Dispose connection when project is closed
-        Disposer.register(project, () -> {
-            connection.disconnect();
-            projectConnections.remove(project);
-            projectHasOpenEditors.remove(project);
-        });
+        }
     }
 
+    /**
+     * Controlla se ci sono editor aperti nel progetto e aggiorna lo stato interno
+     */
+    private boolean checkAndUpdateOpenEditorsState(@NotNull Project project) {
+        if (project.isDisposed()) {
+            projectsWithOpenEditors.remove(project);
+            return false;
+        }
+
+        boolean hasOpenEditors = FileEditorManager.getInstance(project).getAllEditors().length > 0;
+        projectsWithOpenEditors.put(project, hasOpenEditors);
+        return hasOpenEditors;
+    }
+
+    /**
+     * Aggiorna la visibilità del widget in base allo stato degli editor
+     */
     private void updateWidgetVisibility(@NotNull Project project) {
         if (project.isDisposed()) {
             return;
@@ -110,19 +112,19 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
             try {
                 StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
                 if (statusBar != null) {
-                    boolean hasOpenEditors = projectHasOpenEditors.getOrDefault(project, false);
+                    boolean hasOpenEditors = projectsWithOpenEditors.getOrDefault(project, false);
 
                     if (hasOpenEditors) {
-                        // Se ci sono file aperti, assicuriamoci che il widget sia presente e aggiornato
+                        // Se ci sono file aperti, assicuriamoci che il widget sia presente
                         if (statusBar.getWidget(VarTypeStatusBarWidget.ID) == null) {
-                            LOG.info("Re-adding widget as files are now open");
+                            LOG.info("Adding widget as files are open");
                             statusBar.addWidget(createWidget(project), project);
                         } else {
-                            // Widget esiste già, aggiorniamolo
+                            // Aggiorniamo il widget esistente
                             statusBar.updateWidget(VarTypeStatusBarWidget.ID);
                         }
                     } else {
-                        // Se non ci sono file aperti, rimuoviamo completamente il widget
+                        // Se non ci sono file aperti, rimuoviamo il widget
                         if (statusBar.getWidget(VarTypeStatusBarWidget.ID) != null) {
                             LOG.info("Removing widget as all files are closed");
                             statusBar.removeWidget(VarTypeStatusBarWidget.ID);
