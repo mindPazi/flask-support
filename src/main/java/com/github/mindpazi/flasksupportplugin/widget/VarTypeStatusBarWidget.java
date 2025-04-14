@@ -1,4 +1,4 @@
-package com.github.mindpazi.flasksupportplugin.statusbar.widget;
+package com.github.mindpazi.flasksupportplugin.widget;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.project.Project;

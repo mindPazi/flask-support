@@ -16,10 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.function.Supplier;
 
-/**
- * Handles plugin error reporting directly from the IDE.
- * Allows users to submit error reports to the issue tracker on GitHub.
- */
 public class VarTypeErrorReporter extends ErrorReportSubmitter {
     @NonNls
     private static final String GITHUB_ISSUE_URL = "https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
@@ -39,21 +35,42 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
         return reportActionTextMsg.get();
     }
 
+    private IdeaPluginDescriptor retrievePluginDescriptor() {
+        PluginId pluginId = PluginId.getId("com.github.mindpazi.flasksupportplugin");
+        return PluginManagerCore.getPlugin(pluginId);
+    }
+
     @Override
     public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo,
             @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
-        // Gets the plugin ID
-        PluginId pluginId = PluginId.getId("com.github.mindpazi.flasksupportplugin");
-        IdeaPluginDescriptor plugin = PluginManagerCore.getPlugin(pluginId);
+        try {
+            // Get plugin information
+            IdeaPluginDescriptor plugin = retrievePluginDescriptor();
 
-        // Issue tracker URL - replace "mindpazi" with your actual GitHub username
-        String url = GITHUB_ISSUE_URL;
+            // Build the issue body with all required information
+            String body = buildIssueBody(events, additionalInfo, plugin);
 
-        // Prepares the issue body with error details
+            // Encode and submit the issue
+            return submitIssueToTracker(body, consumer);
+        } catch (Exception e) {
+            // In case of error during reporting
+            return false;
+        }
+    }
+
+    private String buildIssueBody(IdeaLoggingEvent[] events, String additionalInfo, IdeaPluginDescriptor plugin) {
         StringBuilder body = new StringBuilder();
+
+        appendExceptionDetails(body, events);
+        appendAdditionalInfo(body, additionalInfo);
+        appendSystemInfo(body, plugin);
+
+        return body.toString();
+    }
+
+    private void appendExceptionDetails(StringBuilder body, IdeaLoggingEvent[] events) {
         body.append("### ").append(exceptionDetailsMsg.get()).append("\n\n```\n");
 
-        // Add exception details
         for (IdeaLoggingEvent event : events) {
             body.append(event.getMessage()).append("\n");
             if (event.getThrowable() != null) {
@@ -62,44 +79,43 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
         }
 
         body.append("```\n\n");
+    }
 
-        // Add additional information provided by the user
+    private void appendAdditionalInfo(StringBuilder body, String additionalInfo) {
         if (additionalInfo != null) {
             body.append("### ").append(additionalInfoMsg.get()).append("\n\n")
                     .append(additionalInfo).append("\n\n");
         }
+    }
 
-        // Add system info
+    private void appendSystemInfo(StringBuilder body, IdeaPluginDescriptor plugin) {
         body.append("### ").append(systemInfoMsg.get()).append("\n\n");
 
-        // Format the plugin version message
+        // Plugin version
         String pluginVersionText = pluginVersionMsg.get().replace("{0}",
                 plugin != null ? plugin.getVersion() : unknownMsg.get());
         body.append("* ").append(pluginVersionText).append("\n");
 
-        // Format the OS message
+        // OS information
         String osText = osMsg.get().replace("{0}", System.getProperty("os.name"))
                 .replace("{1}", System.getProperty("os.version"));
         body.append("* ").append(osText).append("\n");
 
-        // Format the Java version message
+        // Java version
         String javaVersionText = javaVersionMsg.get().replace("{0}", System.getProperty("java.version"));
         body.append("* ").append(javaVersionText).append("\n");
+    }
 
-        try {
-            // Encode the URL body
-            String encodedBody = java.net.URLEncoder.encode(body.toString(), java.nio.charset.StandardCharsets.UTF_8);
+    private boolean submitIssueToTracker(String body, Consumer<? super SubmittedReportInfo> consumer) {
+        // Encode the URL body
+        String encodedBody = java.net.URLEncoder.encode(body, java.nio.charset.StandardCharsets.UTF_8);
 
-            // Open the browser with the issue tracker URL
-            BrowserUtil.browse(url + "&body=" + encodedBody);
+        // Open the browser with the issue tracker URL
+        BrowserUtil.browse(GITHUB_ISSUE_URL + "&body=" + encodedBody);
 
-            // Notify that the report has been submitted
-            consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
+        // Notify that the report has been submitted
+        consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
 
-            return true;
-        } catch (Exception e) {
-            // In case of error during reporting
-            return false;
-        }
+        return true;
     }
 }
