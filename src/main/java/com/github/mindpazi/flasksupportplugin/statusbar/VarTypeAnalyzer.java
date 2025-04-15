@@ -22,6 +22,7 @@ public class VarTypeAnalyzer {
     private final Project project;
     private static final Supplier<String> applicationNotAvailableMsg = VarTypeBundle
             .messagePointer("log.application.not.available");
+    private static final Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -38,6 +39,7 @@ public class VarTypeAnalyzer {
             return null;
         }
         if (project.isDisposed() || project == null) {
+            LOG.warn(projectNullMsg.get());
             return null;
         }
 

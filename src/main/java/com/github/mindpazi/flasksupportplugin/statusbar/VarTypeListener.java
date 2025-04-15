@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.function.Supplier;
 
 /**
@@ -23,6 +22,9 @@ public class VarTypeListener implements CaretListener {
     private final Project project;
     private final VarTypeAnalyzer analyzer;
     private final VarTypeWidgetManager widgetManager;
+    private final Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
+    private final Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeListener(Project project) {
         this.project = project;
@@ -33,10 +35,14 @@ public class VarTypeListener implements CaretListener {
     @Override
     public void caretPositionChanged(@NotNull CaretEvent event) {
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
+            LOG.warn(applicationNotAvailableMsg.get());
+
             return;
         }
 
         if (project == null || project.isDisposed()) {
+            LOG.warn(projectNullMsg.get());
+
             return;
         }
 
