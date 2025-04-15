@@ -8,15 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
-
 public class VarTypeStartupActivity implements StartupActivity, DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeStartupActivity.class);
-    private static final Supplier<String> startupRunningMsg = () -> VarTypeBundle.message("log.startup.running");
-    private static final Supplier<String> startupRegisteredMsg = () -> VarTypeBundle.message("log.startup.registered");
-    private static final Supplier<String> startupFailedMsg = () -> VarTypeBundle.message("log.startup.failed");
-    private static final Supplier<String> editorFactoryNotAvailableMsg = () -> VarTypeBundle
-            .message("log.editor.factory.not.available");
 
     @Override
     public void runActivity(@NotNull Project project) {
@@ -25,21 +18,23 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
             return;
         }
 
-        // Format and supply the project name for the message
-        String formattedMessage = startupRunningMsg.get().replace("{0}", project.getName());
+        String formattedMessage = VarTypeBundle.message("log.startup.running", project.getName());
         LOG.info(formattedMessage);
 
         try {
             if (EditorFactory.getInstance() == null) {
-                LOG.warn(editorFactoryNotAvailableMsg.get());
+                String editorFactoryNotAvailableMsg = VarTypeBundle.message("log.editor.factory.not.available");
+                LOG.warn(editorFactoryNotAvailableMsg);
                 return;
             }
 
             VarTypeListener listener = new VarTypeListener(project);
             EditorFactory.getInstance().getEventMulticaster().addCaretListener(listener, project);
-            LOG.info(startupRegisteredMsg.get());
+            String startupRegisteredMsg = VarTypeBundle.message("log.startup.registered");
+            LOG.info(startupRegisteredMsg);
         } catch (Exception e) {
-            LOG.error(startupFailedMsg.get(), e);
+            String startupFailedMsg = VarTypeBundle.message("log.startup.failed");
+            LOG.error(startupFailedMsg, e);
         }
     }
 }

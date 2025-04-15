@@ -23,8 +23,6 @@ public class VarTypeListener implements CaretListener {
     private final Project project;
     private final VarTypeAnalyzer analyzer;
     private final VarTypeWidgetManager widgetManager;
-    private static final Supplier<String> errorVariableTypeMsg = () -> VarTypeBundle.message("log.error.variable.type");
-    private static final Supplier<String> typeErrorMsg = () -> VarTypeBundle.message("widget.type.error");
 
     public VarTypeListener(Project project) {
         this.project = project;
@@ -49,8 +47,14 @@ public class VarTypeListener implements CaretListener {
             String typeText = analyzer.getVariableTypeAtCaret(editor, offset);
             widgetManager.updateStatusBarWidget(typeText);
         } catch (Exception e) {
-            LOG.error(errorVariableTypeMsg.get(), e);
-            widgetManager.updateStatusBarWidget(typeErrorMsg.get().replace("{0}", e.getMessage()));
+            String errorVariableTypeMsg = VarTypeBundle.message("log.error.variable.type");
+            LOG.error(errorVariableTypeMsg, e);
+            widgetManager.updateStatusBarWidget(VarTypeBundle.message("widget.type.error", e.getMessage())); /*
+                                                                                                              * inform
+                                                                                                              * user of
+                                                                                                              * the
+                                                                                                              * error
+                                                                                                              */
         }
     }
 }

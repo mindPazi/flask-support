@@ -19,9 +19,9 @@ import java.util.function.Supplier;
 public class VarTypeWidgetManager {
     private static final Logger LOG = Logger.getInstance(VarTypeWidgetManager.class);
     private final Project project;
-    private static final Supplier<String> statusbarNullMsg = () -> VarTypeBundle.message("log.statusbar.null");
-    private static final Supplier<String> errorUpdateStatusbarMsg = () -> VarTypeBundle
-            .message("log.error.update.statusbar");
+    private static final Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
+    private static final Supplier<String> projectNullMsg = () -> VarTypeBundle.message("log.project.null");
 
     public VarTypeWidgetManager(@NotNull Project project) {
         this.project = project;
@@ -35,10 +35,12 @@ public class VarTypeWidgetManager {
      */
     public void updateStatusBarWidget(@Nullable String varType) {
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
+            LOG.warn(applicationNotAvailableMsg.get());
             return;
         }
 
         if (project == null || project.isDisposed()) {
+            LOG.warn(projectNullMsg.get());
             return;
         }
 
@@ -50,7 +52,8 @@ public class VarTypeWidgetManager {
 
             StatusBar statusBar = windowManager.getStatusBar(project);
             if (statusBar == null) {
-                LOG.warn(statusbarNullMsg.get());
+                String statusbarNullMsg = VarTypeBundle.message("log.statusbar.null");
+                LOG.warn(statusbarNullMsg);
                 return;
             }
 
@@ -62,7 +65,8 @@ public class VarTypeWidgetManager {
                 LOG.warn(VarTypeBundle.message("log.widget.not.found", VarTypeStatusBarWidget.ID));
             }
         } catch (Exception e) {
-            LOG.error(errorUpdateStatusbarMsg.get(), e);
+            String errorUpdateStatusbarMsg = VarTypeBundle.message("log.error.update.statusbar");
+            LOG.error(errorUpdateStatusbarMsg, e);
         }
     }
 }

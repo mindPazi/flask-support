@@ -10,7 +10,6 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.function.Supplier;
 
 /**
@@ -21,6 +20,8 @@ import java.util.function.Supplier;
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
+    private static final Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -33,7 +34,7 @@ public class VarTypeAnalyzer {
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
         if (ApplicationManager.getApplication() == null) {
-            LOG.warn("Application not available");
+            LOG.warn(applicationNotAvailableMsg.get());
             return null;
         }
         if (project.isDisposed() || project == null) {
@@ -68,11 +69,9 @@ public class VarTypeAnalyzer {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
 
-                    Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
-                            type.getPresentableText());
-                    String result = typeLabel.get();
-                    LOG.info(VarTypeBundle.messagePointer("log.found.variable.declaration", result).get());
-                    return result;
+                    String typeLabel = VarTypeBundle.message("widget.type.label", type.getPresentableText());
+                    LOG.info(VarTypeBundle.message("log.found.variable.declaration", typeLabel));
+                    return typeLabel;
                 }
 
                 // Case 2: Check if it is a reference to a variable
@@ -84,12 +83,10 @@ public class VarTypeAnalyzer {
                         PsiVariable variable = (PsiVariable) resolvedElement;
                         PsiType type = variable.getType();
 
-                        Supplier<String> typeLabel = VarTypeBundle.messagePointer("widget.type.label",
-                                type.getPresentableText());
-                        String result = typeLabel.get();
+                        String typeLabel = VarTypeBundle.message("widget.type.label", type.getPresentableText());
 
-                        LOG.info(VarTypeBundle.messagePointer("log.found.variable.reference", result).get());
-                        return result;
+                        LOG.info(VarTypeBundle.message("log.found.variable.reference", typeLabel));
+                        return typeLabel;
                     }
                 }
 

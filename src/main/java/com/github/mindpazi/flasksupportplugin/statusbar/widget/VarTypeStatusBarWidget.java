@@ -2,7 +2,6 @@ package com.github.mindpazi.flasksupportplugin.statusbar.widget;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
@@ -18,7 +17,7 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
     public static final String ID = "VarType";
     private String currentVarType = "";
     private static final Supplier<String> notAvailableMsg = () -> VarTypeBundle.message("widget.type.not.available");
-    private static final Supplier<String> tooltipMsg = () -> VarTypeBundle.message("widget.tooltip");
+    private static final Supplier<String> tooltipMsg = VarTypeBundle.messagePointer("widget.tooltip");
 
     public VarTypeStatusBarWidget(@NotNull Project project) {
         super(project);
@@ -27,11 +26,6 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
     @Override
     public @NotNull String ID() {
         return ID;
-    }
-
-    @Override
-    public void install(@NotNull StatusBar statusBar) {
-        super.install(statusBar);
     }
 
     @Override
@@ -66,8 +60,4 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
         return null;
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
 }

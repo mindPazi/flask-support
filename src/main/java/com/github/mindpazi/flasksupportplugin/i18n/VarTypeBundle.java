@@ -15,7 +15,10 @@ import java.util.function.Supplier;
 public final class VarTypeBundle extends DynamicBundle {
     @NonNls
     private static final String BUNDLE = "messages.VarTypeBundle";
-    private static final VarTypeBundle INSTANCE = new VarTypeBundle();
+    private static final VarTypeBundle INSTANCE = new VarTypeBundle(); /*
+                                                                        * we do this because the construtor of dynamic
+                                                                        * bundle is protected
+                                                                        */
 
     private VarTypeBundle() {
         super(BUNDLE);

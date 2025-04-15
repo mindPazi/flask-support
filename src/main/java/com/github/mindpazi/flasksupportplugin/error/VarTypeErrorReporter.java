@@ -94,17 +94,18 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
         body.append("### ").append(systemInfoMsg.get()).append("\n\n");
 
         // Plugin version
-        String pluginVersionText = pluginVersionMsg.get().replace("{0}",
+        String pluginVersionText = VarTypeBundle.message("error.report.plugin.version",
                 plugin != null ? plugin.getVersion() : unknownMsg.get());
         body.append("* ").append(pluginVersionText).append("\n");
 
         // OS information
-        String osText = osMsg.get().replace("{0}", System.getProperty("os.name"))
-                .replace("{1}", System.getProperty("os.version"));
+        String osText = VarTypeBundle.message("error.report.os",
+                System.getProperty("os.name"), System.getProperty("os.version"));
         body.append("* ").append(osText).append("\n");
 
         // Java version
-        String javaVersionText = javaVersionMsg.get().replace("{0}", System.getProperty("java.version"));
+        String javaVersionText = VarTypeBundle.message("error.report.java.version",
+                System.getProperty("java.version"));
         body.append("* ").append(javaVersionText).append("\n");
     }
 
