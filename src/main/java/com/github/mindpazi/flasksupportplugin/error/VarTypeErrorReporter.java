@@ -26,10 +26,6 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     private static final Supplier<String> additionalInfoMsg = () -> VarTypeBundle
             .message("error.report.additional.info");
     private static final Supplier<String> systemInfoMsg = () -> VarTypeBundle.message("error.report.system.info");
-    private static final Supplier<String> pluginVersionMsg = () -> VarTypeBundle.message("error.report.plugin.version");
-    private static final Supplier<String> unknownMsg = () -> VarTypeBundle.message("error.report.unknown");
-    private static final Supplier<String> osMsg = () -> VarTypeBundle.message("error.report.os");
-    private static final Supplier<String> javaVersionMsg = () -> VarTypeBundle.message("error.report.java.version");
 
     @NotNull
     @Override
@@ -95,7 +91,7 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
 
         // Plugin version
         String pluginVersionText = VarTypeBundle.message("error.report.plugin.version",
-                plugin != null ? plugin.getVersion() : unknownMsg.get());
+                plugin != null ? plugin.getVersion() : "Unknown");
         body.append("* ").append(pluginVersionText).append("\n");
 
         // OS information
