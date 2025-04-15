@@ -20,14 +20,16 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     @NonNls
     private static final String GITHUB_ISSUE_URL = "https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
 
-    private final Supplier<String> reportActionTextMsg = () -> VarTypeBundle.message("error.report.action.text");
-    private final Supplier<String> exceptionDetailsMsg = () -> VarTypeBundle.message("error.report.exception.details");
-    private final Supplier<String> additionalInfoMsg = () -> VarTypeBundle.message("error.report.additional.info");
-    private final Supplier<String> systemInfoMsg = () -> VarTypeBundle.message("error.report.system.info");
-    private final Supplier<String> pluginVersionMsg = () -> VarTypeBundle.message("error.report.plugin.version");
-    private final Supplier<String> unknownMsg = () -> VarTypeBundle.message("error.report.unknown");
-    private final Supplier<String> osMsg = () -> VarTypeBundle.message("error.report.os");
-    private final Supplier<String> javaVersionMsg = () -> VarTypeBundle.message("error.report.java.version");
+    private static final Supplier<String> reportActionTextMsg = () -> VarTypeBundle.message("error.report.action.text");
+    private static final Supplier<String> exceptionDetailsMsg = () -> VarTypeBundle
+            .message("error.report.exception.details");
+    private static final Supplier<String> additionalInfoMsg = () -> VarTypeBundle
+            .message("error.report.additional.info");
+    private static final Supplier<String> systemInfoMsg = () -> VarTypeBundle.message("error.report.system.info");
+    private static final Supplier<String> pluginVersionMsg = () -> VarTypeBundle.message("error.report.plugin.version");
+    private static final Supplier<String> unknownMsg = () -> VarTypeBundle.message("error.report.unknown");
+    private static final Supplier<String> osMsg = () -> VarTypeBundle.message("error.report.os");
+    private static final Supplier<String> javaVersionMsg = () -> VarTypeBundle.message("error.report.java.version");
 
     @NotNull
     @Override

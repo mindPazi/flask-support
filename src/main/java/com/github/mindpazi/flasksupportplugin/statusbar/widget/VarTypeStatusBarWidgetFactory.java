@@ -24,12 +24,10 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     private static final Logger LOG = Logger.getInstance(VarTypeStatusBarWidgetFactory.class);
     @NonNls
     public static final String WIDGET_DISPLAY_NAME = "widget.display.name";
-    private final Supplier<String> displayNameMsg = () -> VarTypeBundle.message("widget.display.name");
+    private static final Supplier<String> displayNameMsg = () -> VarTypeBundle.message("widget.display.name");
 
-    // Mappa che tiene traccia dello stato per ogni progetto
     private final Map<Project, Boolean> projectsWithOpenEditors = new ConcurrentHashMap<>();
 
-    // Flag per controllare se il listener è già stato registrato
     private volatile boolean listenerRegistered = false;
 
     @Override
@@ -44,16 +42,11 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
 
     @Override
     public boolean isAvailable(@NotNull Project project) {
-        // Registriamo il listener una sola volta per l'intera applicazione
         setupListenerIfNeeded();
 
-        // Aggiorniamo e restituiamo lo stato corrente
         return checkAndUpdateOpenEditorsState(project);
     }
 
-    /**
-     * Configura il listener globale per tutti gli editor, se non è già stato fatto
-     */
     private void setupListenerIfNeeded() {
         if (!listenerRegistered) {
             synchronized (this) {
@@ -72,7 +65,6 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                         public void editorReleased(@NotNull EditorFactoryEvent event) {
                             Project project = event.getEditor().getProject();
                             if (project != null) {
-                                // Verifichiamo quanti editor sono ancora aperti
                                 checkAndUpdateOpenEditorsState(project);
                                 updateWidgetVisibility(project);
                             }
@@ -86,9 +78,6 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
         }
     }
 
-    /**
-     * Controlla se ci sono editor aperti nel progetto e aggiorna lo stato interno
-     */
     private boolean checkAndUpdateOpenEditorsState(@NotNull Project project) {
         if (project.isDisposed()) {
             projectsWithOpenEditors.remove(project);
@@ -100,9 +89,6 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
         return hasOpenEditors;
     }
 
-    /**
-     * Aggiorna la visibilità del widget in base allo stato degli editor
-     */
     private void updateWidgetVisibility(@NotNull Project project) {
         if (project.isDisposed()) {
             return;
@@ -115,16 +101,13 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                     boolean hasOpenEditors = projectsWithOpenEditors.getOrDefault(project, false);
 
                     if (hasOpenEditors) {
-                        // Se ci sono file aperti, assicuriamoci che il widget sia presente
                         if (statusBar.getWidget(VarTypeStatusBarWidget.ID) == null) {
                             LOG.info("Adding widget as files are open");
                             statusBar.addWidget(createWidget(project), project);
                         } else {
-                            // Aggiorniamo il widget esistente
                             statusBar.updateWidget(VarTypeStatusBarWidget.ID);
                         }
                     } else {
-                        // Se non ci sono file aperti, rimuoviamo il widget
                         if (statusBar.getWidget(VarTypeStatusBarWidget.ID) != null) {
                             LOG.info("Removing widget as all files are closed");
                             statusBar.removeWidget(VarTypeStatusBarWidget.ID);

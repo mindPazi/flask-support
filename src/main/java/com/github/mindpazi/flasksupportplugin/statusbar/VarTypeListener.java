@@ -23,8 +23,8 @@ public class VarTypeListener implements CaretListener {
     private final Project project;
     private final VarTypeAnalyzer analyzer;
     private final VarTypeWidgetManager widgetManager;
-    private final Supplier<String> errorVariableTypeMsg = () -> VarTypeBundle.message("log.error.variable.type");
-    private final Supplier<String> typeErrorMsg = () -> VarTypeBundle.message("widget.type.error");
+    private static final Supplier<String> errorVariableTypeMsg = () -> VarTypeBundle.message("log.error.variable.type");
+    private static final Supplier<String> typeErrorMsg = () -> VarTypeBundle.message("widget.type.error");
 
     public VarTypeListener(Project project) {
         this.project = project;

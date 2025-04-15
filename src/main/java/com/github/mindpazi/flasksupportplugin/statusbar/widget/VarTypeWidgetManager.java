@@ -19,8 +19,9 @@ import java.util.function.Supplier;
 public class VarTypeWidgetManager {
     private static final Logger LOG = Logger.getInstance(VarTypeWidgetManager.class);
     private final Project project;
-    private final Supplier<String> statusbarNullMsg = () -> VarTypeBundle.message("log.statusbar.null");
-    private final Supplier<String> errorUpdateStatusbarMsg = () -> VarTypeBundle.message("log.error.update.statusbar");
+    private static final Supplier<String> statusbarNullMsg = () -> VarTypeBundle.message("log.statusbar.null");
+    private static final Supplier<String> errorUpdateStatusbarMsg = () -> VarTypeBundle
+            .message("log.error.update.statusbar");
 
     public VarTypeWidgetManager(@NotNull Project project) {
         this.project = project;

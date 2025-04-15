@@ -17,8 +17,8 @@ import java.util.function.Supplier;
 public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusBarWidget.TextPresentation {
     public static final String ID = "VarType";
     private String currentVarType = "";
-    private final Supplier<String> notAvailableMsg = () -> VarTypeBundle.message("widget.type.not.available");
-    private final Supplier<String> tooltipMsg = () -> VarTypeBundle.message("widget.tooltip");
+    private static final Supplier<String> notAvailableMsg = () -> VarTypeBundle.message("widget.type.not.available");
+    private static final Supplier<String> tooltipMsg = () -> VarTypeBundle.message("widget.tooltip");
 
     public VarTypeStatusBarWidget(@NotNull Project project) {
         super(project);

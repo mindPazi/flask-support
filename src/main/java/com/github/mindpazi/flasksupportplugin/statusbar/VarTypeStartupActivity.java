@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 
 public class VarTypeStartupActivity implements StartupActivity, DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeStartupActivity.class);
-    private final Supplier<String> startupRunningMsg = () -> VarTypeBundle.message("log.startup.running");
-    private final Supplier<String> startupRegisteredMsg = () -> VarTypeBundle.message("log.startup.registered");
-    private final Supplier<String> startupFailedMsg = () -> VarTypeBundle.message("log.startup.failed");
-    private final Supplier<String> editorFactoryNotAvailableMsg = () -> VarTypeBundle
+    private static final Supplier<String> startupRunningMsg = () -> VarTypeBundle.message("log.startup.running");
+    private static final Supplier<String> startupRegisteredMsg = () -> VarTypeBundle.message("log.startup.registered");
+    private static final Supplier<String> startupFailedMsg = () -> VarTypeBundle.message("log.startup.failed");
+    private static final Supplier<String> editorFactoryNotAvailableMsg = () -> VarTypeBundle
             .message("log.editor.factory.not.available");
 
     @Override
