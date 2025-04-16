@@ -20,12 +20,13 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     @NonNls
     private static final String GITHUB_ISSUE_URL = "https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
 
-    private static final Supplier<String> reportActionTextMsg = () -> VarTypeBundle.message("error.report.action.text");
-    private static final Supplier<String> exceptionDetailsMsg = () -> VarTypeBundle
-            .message("error.report.exception.details");
-    private static final Supplier<String> additionalInfoMsg = () -> VarTypeBundle
-            .message("error.report.additional.info");
-    private static final Supplier<String> systemInfoMsg = () -> VarTypeBundle.message("error.report.system.info");
+    private static final Supplier<String> reportActionTextMsg = VarTypeBundle
+            .messagePointer("error.report.action.text");
+    private static final Supplier<String> exceptionDetailsMsg = VarTypeBundle
+            .messagePointer("error.report.exception.details");
+    private static final Supplier<String> additionalInfoMsg = VarTypeBundle
+            .messagePointer("error.report.additional.info");
+    private static final Supplier<String> systemInfoMsg = VarTypeBundle.messagePointer("error.report.system.info");
 
     @NotNull
     @Override
