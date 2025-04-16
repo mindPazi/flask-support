@@ -13,18 +13,13 @@ import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     private static final Logger LOG = Logger.getInstance(VarTypeStatusBarWidgetFactory.class);
-    @NonNls
-    public static final String WIDGET_DISPLAY_NAME = "widget.display.name";
-    private static final Supplier<String> displayNameMsg = () -> VarTypeBundle.message("widget.display.name");
 
     private final Map<Project, Boolean> projectsWithOpenEditors = new ConcurrentHashMap<>();
 
@@ -36,18 +31,18 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     }
 
     @Override
-    public @Nls @NotNull String getDisplayName() {
-        return displayNameMsg.get();
+    public @Nls @NotNull String getDisplayName() { /* mandatory to override */
+        return VarTypeBundle.message("widget.display.name");
     }
 
     @Override
     public boolean isAvailable(@NotNull Project project) {
-        setupListenerIfNeeded();
+        setupListener();
 
         return checkAndUpdateOpenEditorsState(project);
     }
 
-    private void setupListenerIfNeeded() {
+    private void setupListener() {
         if (!listenerRegistered) {
             synchronized (this) {
                 if (!listenerRegistered) {
@@ -72,7 +67,9 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                     }, ApplicationManager.getApplication());
 
                     listenerRegistered = true;
-                    LOG.info("Editor factory listener registered");
+                    String message = VarTypeBundle.message("log.editor.factory.listener.registered");
+                    LOG.info(message);
+
                 }
             }
         }
