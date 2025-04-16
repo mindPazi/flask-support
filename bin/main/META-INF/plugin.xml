@@ -24,5 +24,6 @@
     <postStartupActivity implementation="com.github.mindpazi.flasksupportplugin.statusbar.VarTypeStartupActivity" id="varTypeStartupActivity" order="last"/>
     <statusBarWidgetFactory implementation="com.github.mindpazi.flasksupportplugin.statusbar.widget.VarTypeStatusBarWidgetFactory" id="VarType" order="first"/>
     <errorHandler implementation="com.github.mindpazi.flasksupportplugin.error.VarTypeErrorReporter"/>
+    <notificationGroup id="VarType Notifications" displayType="BALLOON" isLogByDefault="true"/>
   </extensions>
 </idea-plugin>

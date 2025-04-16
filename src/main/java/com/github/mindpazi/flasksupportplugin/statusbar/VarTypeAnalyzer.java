@@ -58,15 +58,12 @@ public class VarTypeAnalyzer {
                     return null;
                 }
 
-                // Check if the element is an identifier
                 if (!(element instanceof PsiIdentifier)) {
                     return null;
                 }
 
-                // Parent of the identifier (could be PsiVariable or others)
                 PsiElement parent = element.getParent();
 
-                // Case 1: Check if it is a variable declaration
                 if (parent instanceof PsiVariable) {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
@@ -76,7 +73,6 @@ public class VarTypeAnalyzer {
                     return typeLabel;
                 }
 
-                // Case 2: Check if it is a reference to a variable
                 if (parent instanceof PsiReferenceExpression) {
                     PsiReferenceExpression refExpr = (PsiReferenceExpression) parent;
                     PsiElement resolvedElement = refExpr.resolve();
@@ -92,7 +88,6 @@ public class VarTypeAnalyzer {
                     }
                 }
 
-                // If it is neither a declaration nor a reference, show nothing
                 return null;
             });
         } catch (Exception e) {

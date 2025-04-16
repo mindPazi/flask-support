@@ -11,11 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-/**
- * Class responsible for interacting with the status bar widget.
- * Implements the composition pattern by separating the widget update logic from
- * the listener.
- */
 public class VarTypeWidgetManager {
     private static final Logger LOG = Logger.getInstance(VarTypeWidgetManager.class);
     private final Project project;
@@ -27,12 +22,6 @@ public class VarTypeWidgetManager {
         this.project = project;
     }
 
-    /**
-     * Updates the status bar widget with the provided variable type.
-     *
-     * @param varType The variable type to display or null if there is no type to
-     *                show
-     */
     public void updateStatusBarWidget(@Nullable String varType) {
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
             LOG.warn(applicationNotAvailableMsg.get());
