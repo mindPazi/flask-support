@@ -12,11 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
-/**
- * Class responsible for analyzing the PSI to determine the type of a variable.
- * Implements the composition pattern by separating the analysis logic from the
- * listener.
- */
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
@@ -28,10 +23,6 @@ public class VarTypeAnalyzer {
         this.project = project;
     }
 
-    /**
-     * Analyzes the PSI element at the cursor position and returns the variable
-     * type, if present.
-     */
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
         if (ApplicationManager.getApplication() == null) {
@@ -58,15 +49,12 @@ public class VarTypeAnalyzer {
                     return null;
                 }
 
-                // Check if the element is an identifier
                 if (!(element instanceof PsiIdentifier)) {
                     return null;
                 }
 
-                // Parent of the identifier (could be PsiVariable or others)
                 PsiElement parent = element.getParent();
 
-                // Case 1: Check if it is a variable declaration
                 if (parent instanceof PsiVariable) {
                     PsiVariable variable = (PsiVariable) parent;
                     PsiType type = variable.getType();
@@ -76,7 +64,6 @@ public class VarTypeAnalyzer {
                     return typeLabel;
                 }
 
-                // Case 2: Check if it is a reference to a variable
                 if (parent instanceof PsiReferenceExpression) {
                     PsiReferenceExpression refExpr = (PsiReferenceExpression) parent;
                     PsiElement resolvedElement = refExpr.resolve();
@@ -92,7 +79,6 @@ public class VarTypeAnalyzer {
                     }
                 }
 
-                // If it is neither a declaration nor a reference, show nothing
                 return null;
             });
         } catch (Exception e) {

@@ -13,13 +13,13 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
 
     @Override
     public void runActivity(@NotNull Project project) {
-        // Check if the project is disposed before proceeding with the activity.
+
         if (project.isDisposed()) {
             return;
         }
 
-        String formattedMessage = VarTypeBundle.message("log.startup.running", project.getName());
-        LOG.info(formattedMessage);
+        String startupMessage = VarTypeBundle.message("log.startup.running", project.getName());
+        LOG.info(startupMessage);
 
         try {
             if (EditorFactory.getInstance() == null) {

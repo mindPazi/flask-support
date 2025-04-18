@@ -10,13 +10,6 @@ import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
-
-/**
- * Listener for cursor movement events that updates the status bar widget
- * with the variable type at the current position.
- * Uses composition to delegate PSI analysis and widget updating to dedicated
- * classes.
- */
 public class VarTypeListener implements CaretListener {
     private static final Logger LOG = Logger.getInstance(VarTypeListener.class);
     private final Project project;
