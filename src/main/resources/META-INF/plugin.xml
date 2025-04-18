@@ -6,7 +6,7 @@
 
   <description><![CDATA[
       A plugin to display Java variable types in the IDE status bar.
-      Place the cursor on a variable name to display its type.
+      Place the caret on a variable name to display its type.
     ]]>  </description>
 
   <change-notes><![CDATA[

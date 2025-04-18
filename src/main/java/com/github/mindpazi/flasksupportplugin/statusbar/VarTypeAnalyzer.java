@@ -12,11 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
-/**
- * Class responsible for analyzing the PSI to determine the type of a variable.
- * Implements the composition pattern by separating the analysis logic from the
- * listener.
- */
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
@@ -28,10 +23,6 @@ public class VarTypeAnalyzer {
         this.project = project;
     }
 
-    /**
-     * Analyzes the PSI element at the cursor position and returns the variable
-     * type, if present.
-     */
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
         if (ApplicationManager.getApplication() == null) {
