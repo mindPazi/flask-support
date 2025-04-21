@@ -64,13 +64,32 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
 
     @Override
     public boolean isAvailable(@NotNull Project project) {
+        if (project.isDisposed()) {
+            return false;
+        }
+
         setupListener();
-        return hasOpenEditors(project);
+
+        // Forziamo a true per debug - RIMUOVERE DOPO I TEST
+        LOG.info("isAvailable called for project: " + project.getName() + " - FORZATO A TRUE per debug");
+        return true;
+
+        // Codice originale commentato
+        /*
+         * if (!editorCountByProject.containsKey(project)) {
+         * int openEditors = EditorFactory.getInstance().getAllEditors().length;
+         * if (openEditors > 0) {
+         * editorCountByProject.put(project, openEditors);
+         * projectsWithOpenEditors.put(project, true);
+         * LOG.debug("Initialized project with " + openEditors + " open editors");
+         * return true;
+         * }
+         * }
+         * 
+         * return hasOpenEditors(project);
+         */
     }
 
-    /**
-     * Verifica se un progetto ha editor aperti
-     */
     private boolean hasOpenEditors(@NotNull Project project) {
         if (project.isDisposed()) {
             projectsWithOpenEditors.remove(project);
@@ -136,22 +155,26 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
         ApplicationManager.getApplication().invokeLater(() -> {
             try {
                 StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-                if (statusBar != null) {
-                    boolean hasOpenEditors = projectsWithOpenEditors.getOrDefault(project, false);
-                    int editorCount = editorCountByProject.getOrDefault(project, 0);
+                if (statusBar == null) {
+                    return;
+                }
 
-                    if (hasOpenEditors) {
-                        if (statusBar.getWidget(WIDGET_ID) == null) {
-                            LOG.debug(String.format(WIDGET_ADDED_MSG.get(), editorCount));
-                            statusBar.addWidget(createWidget(project), project);
-                        } else {
-                            statusBar.updateWidget(WIDGET_ID);
-                        }
+                boolean hasOpenEditors = projectsWithOpenEditors.getOrDefault(project, false);
+                int editorCount = editorCountByProject.getOrDefault(project, 0);
+
+                projectsWithOpenEditors.put(project, hasOpenEditors);
+
+                if (hasOpenEditors) {
+                    LOG.debug(String.format(WIDGET_ADDED_MSG.get(), editorCount));
+                    if (statusBar.getWidget(WIDGET_ID) == null) {
+                        statusBar.addWidget(createWidget(project), project);
                     } else {
-                        if (statusBar.getWidget(WIDGET_ID) != null) {
-                            LOG.debug(WIDGET_REMOVED_MSG.get());
-                            statusBar.removeWidget(WIDGET_ID);
-                        }
+                        statusBar.updateWidget(WIDGET_ID);
+                    }
+                } else {
+                    LOG.debug(WIDGET_REMOVED_MSG.get());
+                    if (statusBar.getWidget(WIDGET_ID) != null) {
+                        statusBar.removeWidget(WIDGET_ID);
                     }
                 }
             } catch (Exception e) {
