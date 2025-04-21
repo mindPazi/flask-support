@@ -10,14 +10,10 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.function.Supplier;
 
 public class VarTypeAnalyzer {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
-    private static final Supplier<String> applicationNotAvailableMsg = VarTypeBundle
-            .messagePointer("log.application.not.available");
-    private static final Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -26,11 +22,11 @@ public class VarTypeAnalyzer {
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
         if (ApplicationManager.getApplication() == null) {
-            LOG.warn(applicationNotAvailableMsg.get());
+            LOG.warn(VarTypeBundle.message("log.application.not.available"));
             return null;
         }
-        if (project.isDisposed() || project == null) {
-            LOG.warn(projectNullMsg.get());
+        if (project == null || project.isDisposed()) {
+            LOG.warn(VarTypeBundle.message("log.project.null"));
             return null;
         }
 
@@ -82,7 +78,7 @@ public class VarTypeAnalyzer {
                 return null;
             });
         } catch (Exception e) {
-            LOG.warn("Error during PSI analysis", e);
+            LOG.warn(VarTypeBundle.message("log.error.psi.analysis"), e);
             return null;
         }
     }

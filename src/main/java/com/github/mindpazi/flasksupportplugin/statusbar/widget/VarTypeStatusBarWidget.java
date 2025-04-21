@@ -20,12 +20,12 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
     public static final String ID = "VarType";
     private String currentVarType = "";
     private boolean disposed = false;
-    private static final Supplier<String> notAvailableMsg = () -> VarTypeBundle.message("widget.type.not.available");
+    private static final Supplier<String> notAvailableMsg = VarTypeBundle.messagePointer("widget.type.not.available");
     private static final Supplier<String> tooltipMsg = VarTypeBundle.messagePointer("widget.tooltip");
 
     public VarTypeStatusBarWidget(@NotNull Project project) {
         super(project);
-        LOG.debug("Widget instance created for project: " + project.getName());
+        LOG.debug(VarTypeBundle.message("log.widget.instance.created", project.getName()));
     }
 
     @Override
@@ -74,18 +74,13 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
         return null;
     }
 
-    /**
-     * Questo metodo viene chiamato quando il widget viene rimosso dalla barra di
-     * stato
-     * o quando l'applicazione viene chiusa.
-     */
     @Override
     public void dispose() {
         if (disposed) {
             return;
         }
 
-        LOG.debug("Disposing widget");
+        LOG.debug(VarTypeBundle.message("log.widget.disposing"));
         disposed = true;
         currentVarType = "";
 
@@ -95,13 +90,13 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
 
             try {
                 if (statusBar.getWidget(ID()) != null) {
-                    LOG.debug("Removing widget from status bar during dispose");
+                    LOG.debug(VarTypeBundle.message("log.widget.removing"));
                     statusBar.removeWidget(ID());
                 }
 
                 statusBar.getComponent().repaint();
             } catch (Exception e) {
-                LOG.warn("Error during widget disposal", e);
+                LOG.warn(VarTypeBundle.message("log.widget.disposal.error"), e);
             }
         }
 

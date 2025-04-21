@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public class VarTypeErrorReporter extends ErrorReportSubmitter {
     @NonNls
-    private static final String GITHUB_ISSUE_URL = "https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
+    private static final String GITHUB_ISSUE_URL ="https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
 
     private static final Supplier<String> reportActionTextMsg = VarTypeBundle
             .messagePointer("error.report.action.text");
@@ -43,16 +43,14 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo,
             @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
         try {
-            // Get plugin information
+
             IdeaPluginDescriptor plugin = retrievePluginDescriptor();
 
-            // Build the issue body with all required information
             String body = buildIssueBody(events, additionalInfo, plugin);
 
-            // Encode and submit the issue
             return submitIssueToTracker(body, consumer);
         } catch (Exception e) {
-            // In case of error during reporting
+
             return false;
         }
     }
@@ -90,30 +88,25 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     private void appendSystemInfo(StringBuilder body, IdeaPluginDescriptor plugin) {
         body.append("### ").append(systemInfoMsg.get()).append("\n\n");
 
-        // Plugin version
         String pluginVersionText = VarTypeBundle.message("error.report.plugin.version",
                 plugin != null ? plugin.getVersion() : "Unknown");
         body.append("* ").append(pluginVersionText).append("\n");
 
-        // OS information
         String osText = VarTypeBundle.message("error.report.os",
                 System.getProperty("os.name"), System.getProperty("os.version"));
         body.append("* ").append(osText).append("\n");
 
-        // Java version
         String javaVersionText = VarTypeBundle.message("error.report.java.version",
                 System.getProperty("java.version"));
         body.append("* ").append(javaVersionText).append("\n");
     }
 
     private boolean submitIssueToTracker(String body, Consumer<? super SubmittedReportInfo> consumer) {
-        // Encode the URL body
+
         String encodedBody = java.net.URLEncoder.encode(body, java.nio.charset.StandardCharsets.UTF_8);
 
-        // Open the browser with the issue tracker URL
         BrowserUtil.browse(GITHUB_ISSUE_URL + "&body=" + encodedBody);
 
-        // Notify that the report has been submitted
         consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
 
         return true;

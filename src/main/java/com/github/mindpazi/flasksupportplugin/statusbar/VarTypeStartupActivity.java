@@ -57,23 +57,23 @@ public class VarTypeStartupActivity implements StartupActivity, DumbAware {
                 if (statusBar != null) {
                     StatusBarWidget existingWidget = statusBar.getWidget(VarTypeStatusBarWidget.ID);
                     if (existingWidget != null) {
-                        LOG.info("Cleaning up existing widget during startup");
+                        LOG.info(VarTypeBundle.message("log.cleanup.existing.widget"));
 
                         try {
                             existingWidget.dispose();
                         } catch (Exception e) {
-                            LOG.warn("Error disposing widget during startup", e);
+                            LOG.warn(VarTypeBundle.message("log.error.disposing.widget"), e);
                         }
 
                         try {
                             statusBar.removeWidget(VarTypeStatusBarWidget.ID);
                         } catch (Exception e) {
-                            LOG.warn("Error removing widget during startup", e);
+                            LOG.warn(VarTypeBundle.message("log.error.removing.widget"), e);
                         }
                     }
                 }
             } catch (Exception e) {
-                LOG.error("Error during widget cleanup at startup", e);
+                LOG.error(VarTypeBundle.message("log.error.cleanup.startup"), e);
             }
         });
     }

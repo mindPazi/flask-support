@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     private static final Logger LOG = Logger.getInstance(VarTypeStatusBarWidgetFactory.class);
+    private static final String factoryInitializedMsg = VarTypeBundle.message("log.factory.initialized");
+    private static final String appWillBeClosedMsg = VarTypeBundle.message("log.app.will.be.closed");
 
     private static final String WIDGET_ID = VarTypeStatusBarWidget.ID;
 
@@ -27,7 +29,7 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
     private volatile boolean listenerRegistered = false;
 
     public VarTypeStatusBarWidgetFactory() {
-        LOG.debug(VarTypeBundle.message("log.factory.initialized"));
+        LOG.debug(factoryInitializedMsg);
 
         setupListener();
 
@@ -35,7 +37,7 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                 .subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {
                     @Override
                     public void appWillBeClosed(boolean isRestart) {
-                        LOG.debug(VarTypeBundle.message("log.app.will.be.closed"));
+                        LOG.debug(appWillBeClosedMsg);
                         cleanup();
                     }
                 });
@@ -87,26 +89,30 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
 
     private void setupListener() {
         if (!listenerRegistered) {
-            EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
-                @Override
-                public void editorCreated(@NotNull EditorFactoryEvent event) {
-                    Project project = event.getEditor().getProject();
-                    if (project != null) {
-                        editorCountByProject.merge(project, 1, Integer::sum);
-                        updateWidget(project);
-                    }
-                }
+            synchronized (this) {
+                if (!listenerRegistered) {
+                    EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
+                        @Override
+                        public void editorCreated(@NotNull EditorFactoryEvent event) {
+                            Project project = event.getEditor().getProject();
+                            if (project != null) {
+                                editorCountByProject.merge(project, 1, Integer::sum);
+                                updateWidget(project);
+                            }
+                        }
 
-                @Override
-                public void editorReleased(@NotNull EditorFactoryEvent event) {
-                    Project project = event.getEditor().getProject();
-                    if (project != null) {
-                        editorCountByProject.computeIfPresent(project, (p, c) -> Math.max(0, c - 1));
-                        updateWidget(project);
-                    }
+                        @Override
+                        public void editorReleased(@NotNull EditorFactoryEvent event) {
+                            Project project = event.getEditor().getProject();
+                            if (project != null) {
+                                editorCountByProject.computeIfPresent(project, (p, c) -> Math.max(0, c - 1));
+                                updateWidget(project);
+                            }
+                        }
+                    }, ApplicationManager.getApplication());
+                    listenerRegistered = true;
                 }
-            }, ApplicationManager.getApplication());
-            listenerRegistered = true;
+            }
         }
     }
 
