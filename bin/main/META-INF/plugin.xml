@@ -2,16 +2,17 @@
 <idea-plugin>
   <id>com.github.mindpazi.flasksupportplugin</id>
   <name>Variable Type Display</name>
-  <vendor url="https://github.com/mindpazi/flask-support-plugin" email="mindpazi@example.com">mindpazi</vendor>
+  <vendor url="https://github.com/mindpazi/flask-support-plugin" email="gitmind87@gmail">mindpazi</vendor>
 
   <description><![CDATA[
       A plugin to display Java variable types in the IDE status bar.
       Place the caret on a variable name to display its type.
+      Bug reports and feature requests are welcome on the
+      <a href="https://github.com/mindpazi/flask-support-plugin/issues">issue tracker</a>.
     ]]>  </description>
 
   <change-notes><![CDATA[
-      Bug reports and feature requests are welcome on the
-      <a href="https://github.com/mindpazi/flask-support-plugin/issues">issue tracker</a>.
+      <!-- News -->
     ]]>  </change-notes>
 
   <depends>com.intellij.modules.platform</depends>
