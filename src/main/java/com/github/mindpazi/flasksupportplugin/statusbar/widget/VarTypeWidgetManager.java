@@ -8,10 +8,14 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.function.Supplier;
 
 public class VarTypeWidgetManager {
     private static final Logger LOG = Logger.getInstance(VarTypeWidgetManager.class);
     private final Project project;
+    private final static Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
+    private final static Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeWidgetManager(@NotNull Project project) {
         this.project = project;
@@ -19,12 +23,12 @@ public class VarTypeWidgetManager {
 
     public void updateStatusBarWidget(@Nullable String varType) {
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
-            LOG.warn(VarTypeBundle.message("log.application.not.available"));
+            LOG.warn(applicationNotAvailableMsg.get());
             return;
         }
 
         if (project == null || project.isDisposed()) {
-            LOG.warn(VarTypeBundle.message("log.project.null"));
+            LOG.warn(projectNullMsg.get());
             return;
         }
 

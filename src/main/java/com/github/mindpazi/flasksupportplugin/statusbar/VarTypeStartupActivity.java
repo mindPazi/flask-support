@@ -6,8 +6,9 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.project.DumbAware;
 
-public class VarTypeStartupActivity implements StartupActivity {
+public class VarTypeStartupActivity implements StartupActivity, DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeStartupActivity.class);
     private static final String startupRegisteredMsg = VarTypeBundle.message("log.startup.registered");
     private static final String startupMessage = VarTypeBundle.message("log.startup.running");
@@ -15,7 +16,8 @@ public class VarTypeStartupActivity implements StartupActivity {
     @Override
     public void runActivity(@NotNull Project project) {
 
-        if (project.isDisposed()) {
+        if (project.isDisposed() || project == null) {
+            LOG.warn(VarTypeBundle.message("log.project.null"));
             return;
         }
 

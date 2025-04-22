@@ -10,10 +10,15 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.project.DumbAware;
+import java.util.function.Supplier;
 
-public class VarTypeAnalyzer {
+public class VarTypeAnalyzer implements DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeAnalyzer.class);
     private final Project project;
+    private final static Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
+    private final static Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeAnalyzer(@NotNull Project project) {
         this.project = project;
@@ -21,12 +26,12 @@ public class VarTypeAnalyzer {
 
     @Nullable
     public String getVariableTypeAtCaret(@NotNull Editor editor, int offset) {
-        if (ApplicationManager.getApplication() == null) {
-            LOG.warn(VarTypeBundle.message("log.application.not.available"));
+        if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
+            LOG.warn(applicationNotAvailableMsg.get());
             return null;
         }
         if (project == null || project.isDisposed()) {
-            LOG.warn(VarTypeBundle.message("log.project.null"));
+            LOG.warn(projectNullMsg.get());
             return null;
         }
 

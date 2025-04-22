@@ -12,12 +12,17 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.concurrency.NonUrgentExecutor;
+import com.intellij.openapi.project.DumbAware;
+import java.util.function.Supplier;
 
-public class VarTypeListener implements CaretListener {
+public class VarTypeListener implements CaretListener, DumbAware {
     private static final Logger LOG = Logger.getInstance(VarTypeListener.class);
     private final Project project;
     private final VarTypeAnalyzer analyzer;
     private final VarTypeWidgetManager widgetManager;
+    private final static Supplier<String> applicationNotAvailableMsg = VarTypeBundle
+            .messagePointer("log.application.not.available");
+    private final static Supplier<String> projectNullMsg = VarTypeBundle.messagePointer("log.project.null");
 
     public VarTypeListener(Project project) {
         this.project = project;
@@ -28,12 +33,12 @@ public class VarTypeListener implements CaretListener {
     @Override
     public void caretPositionChanged(@NotNull CaretEvent event) {
         if (ApplicationManager.getApplication() == null || ApplicationManager.getApplication().isDisposed()) {
-            LOG.warn(VarTypeBundle.message("log.application.not.available"));
+            LOG.warn(applicationNotAvailableMsg.get());
             return;
         }
 
         if (project == null || project.isDisposed()) {
-            LOG.warn(VarTypeBundle.message("log.project.null"));
+            LOG.warn(projectNullMsg.get());
             return;
         }
 
@@ -44,7 +49,8 @@ public class VarTypeListener implements CaretListener {
                 .expireWith(project)
                 .coalesceBy(project, VarTypeListener.class)
                 .finishOnUiThread(ModalityState.defaultModalityState(),
-                        typeText -> widgetManager.updateStatusBarWidget(typeText))
+                        typeText -> widgetManager.updateStatusBarWidget(typeText)) // typetext is returned by
+                                                                                   // getVariableTypeAtCaret
                 .submit(NonUrgentExecutor.getInstance())
                 .onError(throwable -> {
                     LOG.error(VarTypeBundle.message("log.error.variable.type"), throwable);

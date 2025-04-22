@@ -105,7 +105,10 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                         public void editorReleased(@NotNull EditorFactoryEvent event) {
                             Project project = event.getEditor().getProject();
                             if (project != null) {
-                                editorCountByProject.computeIfPresent(project, (p, c) -> Math.max(0, c - 1));
+                                editorCountByProject.computeIfPresent(project,
+                                        (proj, count) -> Math.max(0, count - 1)); // avoid
+                                // negative
+                                // values
                                 updateWidget(project);
                             }
                         }
