@@ -2,6 +2,11 @@ package com.github.mindpazi.flasksupportplugin.statusbar.widget;
 
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.ide.AppLifecycleListener;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.notification.NotificationGroupManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorFactory;
@@ -98,6 +103,7 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                             if (project != null) {
                                 editorCountByProject.merge(project, 1, Integer::sum);
                                 updateWidget(project);
+                                showNotification(project);
                             }
                         }
 
@@ -110,6 +116,7 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                                 // negative
                                 // values
                                 updateWidget(project);
+                                showNotification(project);
                             }
                         }
                     }, ApplicationManager.getApplication());
@@ -126,5 +133,14 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                 manager.updateWidget(VarTypeStatusBarWidgetFactory.class);
             }
         });
+    }
+
+    private void showNotification(Project project) {
+        int count = editorCountByProject.getOrDefault(project, 0);
+        String message = "Current editor count for project: " + count;
+        Notification notification = NotificationGroupManager.getInstance()
+                .getNotificationGroup("VarType Notifications")
+                .createNotification(message, NotificationType.INFORMATION);
+        Notifications.Bus.notify(notification, project);
     }
 }
