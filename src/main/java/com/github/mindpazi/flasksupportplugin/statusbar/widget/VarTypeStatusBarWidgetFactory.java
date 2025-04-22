@@ -3,7 +3,6 @@ package com.github.mindpazi.flasksupportplugin.statusbar.widget;
 import com.github.mindpazi.flasksupportplugin.i18n.VarTypeBundle;
 import com.intellij.ide.AppLifecycleListener;
 import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.notification.NotificationGroupManager;
