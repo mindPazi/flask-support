@@ -102,7 +102,6 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                             if (project != null) {
                                 editorCountByProject.merge(project, 1, Integer::sum);
                                 updateWidget(project);
-                                showNotification(project);
                             }
                         }
 
@@ -115,7 +114,6 @@ public class VarTypeStatusBarWidgetFactory implements StatusBarWidgetFactory {
                                 // negative
                                 // values
                                 updateWidget(project);
-                                showNotification(project);
                             }
                         }
                     }, ApplicationManager.getApplication());
