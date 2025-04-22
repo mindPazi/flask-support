@@ -22,6 +22,7 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
     private boolean disposed = false;
     private static final Supplier<String> notAvailableMsg = VarTypeBundle.messagePointer("widget.type.not.available");
     private static final Supplier<String> tooltipMsg = VarTypeBundle.messagePointer("widget.tooltip");
+    // myStatusBar inherited from EditorBasedWidget
 
     public VarTypeStatusBarWidget(@NotNull Project project) {
         super(project);
@@ -86,7 +87,7 @@ public class VarTypeStatusBarWidget extends EditorBasedWidget implements StatusB
 
         if (myStatusBar != null) {
             StatusBar statusBar = myStatusBar;
-            myStatusBar = null;
+            myStatusBar = null; // to unlink the widget from the status bar while keep cleaning the status bar
 
             try {
                 if (statusBar.getWidget(ID()) != null) {

@@ -14,24 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.function.Supplier;
 
 public class VarTypeErrorReporter extends ErrorReportSubmitter {
     @NonNls
-    private static final String GITHUB_ISSUE_URL ="https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
+    private static final String GITHUB_ISSUE_URL = "https://github.com/mindpazi/flask-support-plugin/issues/new?template=bug_report.md";
 
-    private static final Supplier<String> reportActionTextMsg = VarTypeBundle
-            .messagePointer("error.report.action.text");
-    private static final Supplier<String> exceptionDetailsMsg = VarTypeBundle
-            .messagePointer("error.report.exception.details");
-    private static final Supplier<String> additionalInfoMsg = VarTypeBundle
-            .messagePointer("error.report.additional.info");
-    private static final Supplier<String> systemInfoMsg = VarTypeBundle.messagePointer("error.report.system.info");
-
-    @NotNull
     @Override
-    public String getReportActionText() {
-        return reportActionTextMsg.get();
+    public @NotNull String getReportActionText() {
+        return VarTypeBundle.message("error.report.action.text");
     }
 
     private IdeaPluginDescriptor retrievePluginDescriptor() {
@@ -66,7 +56,7 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
     }
 
     private void appendExceptionDetails(StringBuilder body, IdeaLoggingEvent[] events) {
-        body.append("### ").append(exceptionDetailsMsg.get()).append("\n\n```\n");
+        body.append("### ").append(VarTypeBundle.message("error.report.exception.details")).append("\n\n```\n");
 
         for (IdeaLoggingEvent event : events) {
             body.append(event.getMessage()).append("\n");
@@ -80,13 +70,13 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
 
     private void appendAdditionalInfo(StringBuilder body, String additionalInfo) {
         if (additionalInfo != null) {
-            body.append("### ").append(additionalInfoMsg.get()).append("\n\n")
+            body.append("### ").append(VarTypeBundle.message("error.report.additional.info")).append("\n\n")
                     .append(additionalInfo).append("\n\n");
         }
     }
 
     private void appendSystemInfo(StringBuilder body, IdeaPluginDescriptor plugin) {
-        body.append("### ").append(systemInfoMsg.get()).append("\n\n");
+        body.append("### ").append(VarTypeBundle.message("error.report.system.info")).append("\n\n");
 
         String pluginVersionText = VarTypeBundle.message("error.report.plugin.version",
                 plugin != null ? plugin.getVersion() : "Unknown");
