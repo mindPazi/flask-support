@@ -38,7 +38,7 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
 
             String body = buildIssueBody(events, additionalInfo, plugin);
 
-            return submitIssueToTracker(body, consumer);
+            return submitIssueToTracker(body);
         } catch (Exception e) {
 
             return false;
@@ -91,13 +91,11 @@ public class VarTypeErrorReporter extends ErrorReportSubmitter {
         body.append("* ").append(javaVersionText).append("\n");
     }
 
-    private boolean submitIssueToTracker(String body, Consumer<? super SubmittedReportInfo> consumer) {
+    private boolean submitIssueToTracker(String body) {
 
         String encodedBody = java.net.URLEncoder.encode(body, java.nio.charset.StandardCharsets.UTF_8);
 
         BrowserUtil.browse(GITHUB_ISSUE_URL + "&body=" + encodedBody);
-
-        consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
 
         return true;
     }
